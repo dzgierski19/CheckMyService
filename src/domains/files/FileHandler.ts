@@ -1,15 +1,26 @@
 import fs, { PathLike } from "fs";
+import { pathToHTTPList } from "./Paths";
 
 interface IFileHandler {
   readFile(path: PathLike): Promise<string>;
-  writeFile(path: PathLike, data: string): Promise<void>;
+  writeFile(path: PathLike, data: string): void;
 }
 
-class FileHandler implements IFileHandler {
-  readFile(path: PathLike): Promise<string> {
-    return fs.promises.readFile(path, { encoding: "utf8" });
+export class FileHandler implements IFileHandler {
+  async readFile(path: PathLike): Promise<string> {
+    try {
+      const data = await fs.promises.readFile(path, { encoding: "utf8" });
+      console.log(data);
+      return data;
+    } catch (error) {
+      throw error;
+    }
   }
-  writeFile(path: PathLike, data: string): Promise<void> {
-    return fs.promises.writeFile(path, data);
+  writeFile(path: PathLike, data: string): void {
+    try {
+      fs.promises.writeFile(path, data);
+    } catch (error) {
+      throw error;
+    }
   }
 }
