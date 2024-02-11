@@ -1,7 +1,6 @@
 import { PathLike } from "fs";
 import { FileHandler } from "./FileHandler";
 import fs from "fs";
-import { pathToHTTPList } from "./Paths";
 
 export class FileHandlerChecker {
   constructor(private readonly FileHandler: FileHandler) {}

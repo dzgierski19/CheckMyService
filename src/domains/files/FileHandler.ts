@@ -1,5 +1,4 @@
 import fs, { PathLike } from "fs";
-import { pathToHTTPList } from "./Paths";
 
 interface IFileHandler {
   readFile(path: PathLike): Promise<string>;
