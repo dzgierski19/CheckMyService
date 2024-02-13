@@ -1,16 +1,12 @@
 import express, { Request, Response } from "express";
+import bodyParser from "body-parser";
+import { websitesRouter } from "./routes/WebsitesRouter";
 
 const app = express();
-const port = 8000;
+const port = 8500;
+
+app.use(websitesRouter);
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
-});
-
-app.get("/api", (req: Request, res: Response) => {
-  res.json([
-    { name: "iPhone", price: 800 },
-    { name: "iPad", price: 650 },
-    { name: "iWatch", price: 750 },
-  ]);
 });
