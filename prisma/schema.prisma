@@ -10,13 +10,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model services {
-  id              String        @id @default(uuid())
-  website_url     String     @db.VarChar(255)  
-  created_at      DateTime   @default(now())
-  http_code       Int
+model websites {
+  id          String   @id @default(uuid())
+  website_url String   @unique
+  created_at  DateTime @default(now())
 }
 
-model websites {
-  id 
+model services {
+  id          String   @id @default(uuid())
+  website_url String   @db.VarChar(255)
+  created_at  DateTime @default(now())
+  http_code   Int
 }
