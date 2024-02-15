@@ -5,6 +5,7 @@ import { websitesRouter } from "./routes/WebsitesRouter";
 const app = express();
 const port = 8500;
 
+app.use(express.json());
 app.use(websitesRouter);
 
 app.listen(port, () => {
