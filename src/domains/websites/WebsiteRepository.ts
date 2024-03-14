@@ -1,147 +1,122 @@
-import { PrismaClient, Website } from "@prisma/client";
-import { IWebsiteService } from "../services/WebsiteService";
-import { Log, WebsiteWithLogs } from "../types/Types";
 import { prisma } from "../../IoC";
+import { DomainError, ItemNotAvailableError } from "../errors/Errors";
+import { ResponseStatus } from "../errors/ErrorTypes";
+import { Website } from "./WebsiteTypes";
 
 export interface IWebsiteRepository {
-  addDataToDatabase(data: string): Promise<void>;
-  getAllData(): Promise<Website[]>;
-  deleteDataByWebsiteName(data: string): Promise<void>;
-  deleteData(id: string): Promise<void>;
-  deleteAllData(): Promise<void>;
-  countData(): Promise<void>;
-  getData(data: string): Promise<string>;
-  addLogsToDatabase(url: string): Promise<void>;
-  getLogs(url: string): Promise<Log[]>;
-  getDataWithLogs(url: string): Promise<WebsiteWithLogs[]>;
+  createWebsite(url: string): Promise<void>;
+  getWebsiteByName(url: string): Promise<Website | undefined>;
+  getWebsiteByID(id: string): Promise<Website | undefined>;
+  getAllWebsites(): Promise<Website[]>;
+  countWebsites(): Promise<number>;
+  deleteWebsite(id: string): Promise<void>;
+  getDataById(id: string): Promise<Website | undefined>;
+  getWebsiteWithLogsById(id: string): Promise<Website>;
 }
 
 export class WebsiteRepository implements IWebsiteRepository {
-  constructor(private readonly websiteService: IWebsiteService) {}
+  constructor() {}
 
-  async addDataToDatabase(url: string) {
-    const checkedUrl = await this.websiteService.getInfoAboutUrl(url);
-    const isUnique = await this.isUnique(checkedUrl.name);
-    if (isUnique) {
-      throw new Error(`Duplicate data: ${url}`);
-    }
-    const newData = await prisma.website.create({
-      data: {
-        website_url: url,
-      },
-    });
+  async createWebsite(url: string) {
+    const newData = await prisma.website.create({ data: { website_url: url } });
     console.log(newData.id);
   }
 
-  async checkDataId(url: string) {
-    const unique = await prisma.website.findFirst({
-      where: { website_url: url },
-    });
-    if (unique) {
-      return unique.id;
-    }
-  }
-
-  async deleteLogs(url: string) {
-    await prisma.log.updateMany({
-      where: { website_url: url },
-      data: { deleted_at: new Date() },
-    });
-  }
-
-  async addLogsToDatabase(url: string) {
-    await this.getData(url);
-    const { name, httpCode, status } =
-      await this.websiteService.getInfoAboutUrl(url);
-    const id = await this.checkDataId(url);
-    await prisma.log.create({
-      data: {
-        website_url: name,
-        http_code: httpCode,
-        status: status,
-        websiteId: id,
-      },
-    });
-  }
-
-  async getLogs(url: string): Promise<Log[]> {
-    const result = await prisma.log.findMany({
-      where: { website_url: url },
-    });
-    return result;
-  }
-
-  async countLogs(url: string): Promise<number> {
-    const result = await prisma.log.count({ where: { website_url: url } });
-    return result;
-  }
-
-  async getAllData(): Promise<Website[]> {
-    const data = await prisma.website.findMany({
-      where: { deleted_at: null },
-    });
-    return data;
-  }
-
-  async getData(data: string): Promise<string> {
-    const unique = await prisma.website.findFirst({
-      where: { website_url: data },
-    });
-    if (unique) {
-      return unique.website_url;
-    }
-    throw new Error("Data not available");
-  }
-
-  async getDataWithLogs(url: string) {
-    const website = await prisma.website.findMany({
-      where: { website_url: url },
+  async getWebsiteByName(name: string) {
+    const website = await prisma.website.findFirst({
+      where: { website_url: name, deleted_at: null },
       include: { logs: true },
     });
     if (website) {
-      return website;
+      return Website.create({
+        id: website.id,
+        name: website.website_url,
+        createdAt: website.created_at,
+        deletedAt: website.deleted_at,
+        logs: website.logs,
+      });
     }
-    throw new Error("Data not available");
+    // throw new DomainError(`${name} not found`, ResponseStatus.BAD_REQUEST);
   }
 
-  async deleteDataByWebsiteName(data: string) {
-    await prisma.website.update({
-      where: { website_url: data },
-      data: { deleted_at: new Date() },
+  async getWebsiteByID(id: string) {
+    const website = await prisma.website.findFirst({
+      where: { id: id, deleted_at: null },
+      include: { logs: true },
     });
+    if (website) {
+      return Website.create({
+        id: website.id,
+        name: website.website_url,
+        createdAt: website.created_at,
+        deletedAt: website.deleted_at,
+        logs: website.logs,
+      });
+    }
+    // throw new DomainError(`${id} not found`, ResponseStatus.BAD_REQUEST);
   }
 
-  async deleteData(id: string) {
+  async getAllWebsites(): Promise<any> {
+    const allWebsites = await prisma.website.findMany({
+      where: { deleted_at: null },
+      include: { logs: true },
+    });
+
+    return allWebsites.map((website) =>
+      Website.create({
+        id: website.id,
+        name: website.website_url,
+        createdAt: website.created_at,
+        deletedAt: website.deleted_at,
+        logs: website.logs,
+      })
+    );
+  }
+
+  async countWebsites(): Promise<number> {
+    const number = await prisma.website.count({ where: { deleted_at: null } });
+    return number;
+  }
+
+  async deleteWebsite(id: string) {
     await prisma.website.update({
       where: { id: id },
       data: { deleted_at: new Date() },
     });
   }
 
-  async deleteAllData() {
-    await prisma.website.deleteMany({});
-  }
-
-  async countData() {
-    const data = await prisma.website.count();
-    console.log(data);
-  }
-
-  private async fetchInfo(data: string) {
-    // const url = this.createURL(data);
-    try {
-      const response = await fetch(data);
-      return response;
-      // dodac bledy nieobjete err
-    } catch (err) {
-      throw err;
-    }
-  }
-
-  private async isUnique(data: string | undefined) {
-    const isUnique = await prisma.website.findUnique({
-      where: { website_url: data },
+  async getWebsiteWithLogsById(id: string) {
+    const website = await prisma.website.findFirst({
+      where: { id: id, deleted_at: null },
+      include: { logs: true },
     });
-    return isUnique;
+    if (website) {
+      return Website.create({
+        id: website.id,
+        name: website.website_url,
+        createdAt: website.created_at,
+        deletedAt: website.deleted_at,
+        logs: website.logs,
+      });
+    }
+    throw new ItemNotAvailableError(`${id} not found`);
+  }
+
+  async getDataById(id: string): Promise<Website> {
+    const unique = await prisma.website.findFirst({
+      where: { id: id, deleted_at: null },
+      include: { logs: true },
+    });
+    if (unique) {
+      //loadash
+      return Website.create({
+        id: unique.id,
+        name: unique.website_url,
+        createdAt: unique.created_at,
+        deletedAt: unique.deleted_at,
+        logs: unique.logs,
+      });
+    }
+    throw new ItemNotAvailableError(`${id} not found`);
   }
 }
