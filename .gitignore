@@ -1,5 +1,3 @@
 node_modules
 .DS_Store
-src/checker
 .env
-notes.txt
