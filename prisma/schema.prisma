@@ -19,12 +19,16 @@ model Website {
 }
 
 model Log {
-  id          Int       @id @default(autoincrement())
-  created_at  DateTime  @default(now())
-  website_url String?
-  http_code   Int
-  status      String
-  deleted_at  DateTime?
-  Website     Website?  @relation(fields: [websiteId], references: [id])
-  websiteId   String
+  id         String    @id @default(uuid())
+  created_at DateTime  @default(now())
+  website    Website   @relation(fields: [websiteId], references: [id])
+  websiteId  String
+  http_code  Int
+  status     Status
+  deleted_at DateTime?
+}
+
+enum Status {
+  DOWN
+  RUNNING
 }
