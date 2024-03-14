@@ -36,3 +36,12 @@ export class ItemNotAvailableError extends DomainError {
     super(message, statusCode);
   }
 }
+
+export class PathError extends DomainError {
+  constructor(
+    message: string,
+    statusCode: number = ResponseStatus.BAD_REQUEST
+  ) {
+    super(message, statusCode);
+  }
+}
