@@ -1,37 +1,27 @@
 import { CronJob } from "cron";
-import { WebsiteService } from "./domains/services/WebsiteService";
-import { websiteRepo } from "./IoC";
 import { IWebsiteRepository } from "./domains/websites/WebsiteRepository";
+import { ILogService, LogService } from "./domains/logs/LogService";
+import { IWebsiteService } from "./domains/websites/WebsiteService";
+import { CRON_EVERY_10_SECONDS, logService, websiteService } from "./IoC";
 
-// export const CRON_EVERY_10_SECONDS = new CronJob(
-//   "*/10 * * * * *", // cronTime
-//   async function main2() {
-//     const info = websiteRepo.checkWebsite("https://www.ethereum.org");
-//   }, // onTick
-//   null, // onComplete
-//   true // start
-// );
+export interface ICron {
+  checkWebsites(): Promise<void>;
+}
 
-export class CronCheck {
-  constructor(private readonly websiteRepository: IWebsiteRepository) {}
-  async executeCron(cronTime: string, url: string) {
-    new CronJob(cronTime, async () => {
-      this.websiteRepository.addLogsToDatabase(url);
+export class Cron implements ICron {
+  constructor(
+    private readonly logService: ILogService,
+    private readonly websiteService: IWebsiteService
+  ) {}
+
+  async checkWebsites() {
+    new CronJob(CRON_EVERY_10_SECONDS, async () => {
+      const websites = await this.websiteService.getAllWebsites();
+      websites.forEach((element) => {
+        if (!element.deletedAt) {
+          this.logService.addLogForWebsite(element.id);
+        }
+      });
     }).start();
   }
 }
-
-const cron = new CronCheck(websiteRepo);
-
-// cron.executeCron("*/10 * * * * *", "https://www.ethereum.org");
-// websiteRepo.addDataToDatabase("https://www.ethereum.org");
-const data = websiteRepo
-  .getDataWithLogs("https://www.bitcoin.org")
-  .then((data) => {
-    console.dir(data, { depth: null });
-  });
-
-// cron.executeCron("*/10 * * * * *", "https://www.cointelegraph.com");
-
-// klasa
-// metode która wyciąga websity z db i dla tych websitów odpala sprawdzenie stron i zapisanie tego do bazy danych
