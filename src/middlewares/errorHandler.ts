@@ -4,28 +4,6 @@ import { ZodError } from "zod";
 import { DomainError } from "../domains/errors/Errors";
 import { ResponseStatus } from "../domains/errors/ErrorTypes";
 
-// export function errorHandlerWrapper(
-//   handler: (
-//     error: Error,
-//     req: Request,
-//     res: Response,
-//     next: NextFunction
-//   ) => void
-// ) {
-//   return (error: Error, req: Request, res: Response, next: NextFunction) => {
-//     try {
-//       handler(error, req, res, next);
-//     } catch (err) {
-//       next(err); // Forward error to the default Express error handler
-//     }
-//   };
-// }
-
-// const asyncHandler = fn => (req, res, next) => {
-//   return Promise
-//       .resolve(fn(req, res, next))
-//       .catch(next);
-// };
 export const errorHandler = (
   error: Error,
   req: Request,
