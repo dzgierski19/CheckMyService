@@ -1,9 +1,6 @@
 import { prisma } from "../../IoC";
-import { Status } from "@prisma/client";
 import { Log } from "./LogTypes";
 import { WebsiteStatus } from "../websites/WebsiteTypes";
-import { DomainError } from "../errors/Errors";
-import { ResponseStatus } from "../errors/ErrorTypes";
 
 export interface ILogRepository {
   addLog(httpCode: number, status: WebsiteStatus, id: string): Promise<void>;
@@ -15,7 +12,7 @@ export interface ILogRepository {
 export class LogRepository implements ILogRepository {
   constructor() {}
 
-  async addLog(httpCode: number, status: Status, id: string) {
+  async addLog(httpCode: number, status: WebsiteStatus, id: string) {
     await prisma.log.create({
       data: {
         http_code: httpCode,
