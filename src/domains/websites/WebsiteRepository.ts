@@ -1,6 +1,4 @@
 import { prisma } from "../../IoC";
-import { DomainError, ItemNotAvailableError } from "../errors/Errors";
-import { ResponseStatus } from "../errors/ErrorTypes";
 import { Website } from "./WebsiteTypes";
 
 export interface IWebsiteRepository {
@@ -10,8 +8,7 @@ export interface IWebsiteRepository {
   getAllWebsites(): Promise<Website[]>;
   countWebsites(): Promise<number>;
   deleteWebsite(id: string): Promise<void>;
-  getDataById(id: string): Promise<Website | undefined>;
-  getWebsiteWithLogsById(id: string): Promise<Website>;
+  getWebsiteWithLogsById(id: string): Promise<Website | undefined>;
 }
 
 export class WebsiteRepository implements IWebsiteRepository {
@@ -36,7 +33,6 @@ export class WebsiteRepository implements IWebsiteRepository {
         logs: website.logs,
       });
     }
-    // throw new DomainError(`${name} not found`, ResponseStatus.BAD_REQUEST);
   }
 
   async getWebsiteByID(id: string) {
@@ -53,7 +49,6 @@ export class WebsiteRepository implements IWebsiteRepository {
         logs: website.logs,
       });
     }
-    // throw new DomainError(`${id} not found`, ResponseStatus.BAD_REQUEST);
   }
 
   async getAllWebsites(): Promise<any> {
@@ -99,24 +94,5 @@ export class WebsiteRepository implements IWebsiteRepository {
         logs: website.logs,
       });
     }
-    throw new ItemNotAvailableError(`${id} not found`);
-  }
-
-  async getDataById(id: string): Promise<Website> {
-    const unique = await prisma.website.findFirst({
-      where: { id: id, deleted_at: null },
-      include: { logs: true },
-    });
-    if (unique) {
-      //loadash
-      return Website.create({
-        id: unique.id,
-        name: unique.website_url,
-        createdAt: unique.created_at,
-        deletedAt: unique.deleted_at,
-        logs: unique.logs,
-      });
-    }
-    throw new ItemNotAvailableError(`${id} not found`);
   }
 }
