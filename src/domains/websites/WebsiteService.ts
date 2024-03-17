@@ -68,23 +68,22 @@ export class WebsiteService implements IWebsiteService {
     throw new ItemNotAvailableError(`${url} is not available in database`);
   }
 
-  async deleteWebsite(id: string) {
-    const website = await this.websiteRepository.getWebsiteByID(id);
-    console.log(website);
-    if (website) {
-      if (website.deletedAt) {
-        throw new ItemNotAvailableError("Website is already deleted");
-      }
-      await this.websiteRepository.deleteWebsite(id);
-    }
-  }
-
   async getWebsite(id: string) {
     const website = await this.websiteRepository.getWebsiteByID(id);
     if (website) {
       return Website.create(website);
     }
     throw new ItemNotAvailableError(`${id} not available`);
+  }
+
+  async deleteWebsite(id: string) {
+    const website = await this.getWebsite(id);
+    if (website) {
+      if (website.deletedAt) {
+        throw new ItemNotAvailableError("Website is already deleted");
+      }
+      await this.websiteRepository.deleteWebsite(id);
+    }
   }
 
   private getHostAndPathnameFromURL(url: string): string {
