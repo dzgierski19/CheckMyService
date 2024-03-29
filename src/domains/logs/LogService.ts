@@ -27,42 +27,27 @@ export class LogService implements ILogService {
   }
 
   async deleteLog(id: string) {
-    const log = await this.logRepository.getLog(id);
+    const log = await this.getLog(id);
     if (log) {
-      if (log.deleted_at) {
-        throw new ItemNotAvailableError("Log is already deleted");
-      }
+      // if (log.deleted_at) {
+      //   throw new ItemNotAvailableError("Log is already deleted");
+      // }
+      // }
+      await this.logRepository.deleteLog(id);
     }
-    await this.logRepository.deleteLog(id);
+    // throw new ItemNotAvailableError(`${id} not available`);
   }
-
   async getLog(id: string) {
     const log = await this.logRepository.getLog(id);
     if (log) {
-      return Log.create({
-        id: log.id,
-        websiteId: log.websiteId,
-        http_code: log.http_code,
-        status: log.status,
-        created_at: log.created_at,
-        deleted_at: log.deleted_at,
-      });
+      return Log.create(log);
     }
     throw new ItemNotAvailableError(`${id} is not available`);
   }
 
   async getAllLogs(websiteId: string) {
     const getLogs = await this.logRepository.getAllLogs(websiteId);
-    return getLogs.map((log) =>
-      Log.create({
-        id: log.id,
-        websiteId: log.websiteId,
-        http_code: log.http_code,
-        status: log.status,
-        created_at: log.created_at,
-        deleted_at: log.deleted_at,
-      })
-    );
+    return getLogs.map((log) => Log.create(log));
   }
 
   private async getInfoAboutUrl(url: string) {
@@ -74,7 +59,7 @@ export class LogService implements ILogService {
       httpCode: status,
       status: httpStatus,
     };
-    console.log(URLwithInfo);
+    // console.log(URLwithInfo);
     return URLwithInfo;
   }
 
