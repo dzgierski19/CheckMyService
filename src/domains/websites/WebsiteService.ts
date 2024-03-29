@@ -79,9 +79,9 @@ export class WebsiteService implements IWebsiteService {
   async deleteWebsite(id: string) {
     const website = await this.getWebsite(id);
     if (website) {
-      if (website.deletedAt) {
-        throw new ItemNotAvailableError("Website is already deleted");
-      }
+      // if (website.deletedAt) {
+      //   throw new ItemNotAvailableError("Website is already deleted");
+      // }
       await this.websiteRepository.deleteWebsite(id);
     }
   }
