@@ -2,18 +2,20 @@ import { NextFunction, Request, Response } from "express";
 import { ILogService } from "./LogService";
 import {
   deleteLogRequest,
-  deleteLogSchema,
+  logPaginationRequest,
   postLogRequest,
-  postLogSchema,
 } from "../../schemas/ValidateSchema";
-import { ICron } from "../../Cron";
-import { ZodError } from "zod";
 import { IWebsiteService } from "../websites/WebsiteService";
 import { ResponseStatus } from "../errors/ErrorTypes";
 import { ParsedRequest } from "../../interfaces/api/apiTypes";
+import { paginate } from "../../middlewares/paginationMiddleware";
 
 interface ILogController {
-  getLogs(req: Request, res: Response, next: NextFunction): Promise<void>;
+  getLogs(
+    req: ParsedRequest<logPaginationRequest>,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>;
   getLog(req: Request, res: Response, next: NextFunction): Promise<void>;
   postLog(
     req: ParsedRequest<postLogRequest>,
@@ -33,9 +35,14 @@ export class LogController implements ILogController {
     private readonly websiteService: IWebsiteService
   ) {}
 
-  getLogs = async (req: Request, res: Response) => {
+  getLogs = async (req: ParsedRequest<logPaginationRequest>, res: Response) => {
     const id = req.params.websiteId;
     const logs = await this.logService.getAllLogs(id);
+    paginate(logs)(req, res, () => {
+      const paginatedWebsites = req.body;
+      res.status(ResponseStatus.SUCCESS).send(paginatedWebsites);
+    });
+
     res.status(ResponseStatus.SUCCESS).send(logs);
   };
 
