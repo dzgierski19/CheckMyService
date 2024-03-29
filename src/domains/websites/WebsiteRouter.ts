@@ -3,8 +3,10 @@ import { websiteController } from "../../IoC";
 import { validatorMiddleware } from "../../middlewares/validationMiddleware";
 import {
   deleteWebsiteSchema,
+  getRaportSchema,
   postWebsiteSchema,
 } from "../../schemas/ValidateSchema";
+
 require("express-async-errors");
 
 export const websiteRouter = Router();
@@ -20,3 +22,8 @@ websiteRouter.delete(
   websiteController.deleteWebsite
 );
 websiteRouter.get("/websites", websiteController.getWebsites);
+websiteRouter.get(
+  "/websites/:websiteId/logs/report",
+  validatorMiddleware(getRaportSchema),
+  websiteController.getWebsiteRaport
+);
