@@ -1,13 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import {
   deleteWebsiteRequest,
-  deleteWebsiteSchema,
+  getRaportRequest,
+  websitePaginationRequest,
   postWebsiteRequest,
-  postWebsiteSchema,
 } from "../../schemas/ValidateSchema";
 import { IWebsiteService } from "./WebsiteService";
 import { ParsedRequest } from "../../interfaces/api/apiTypes";
 import { ResponseStatus } from "../errors/ErrorTypes";
+import { PATH_TO_RAPORT_CSV, csvService } from "../../IoC";
+import { paginate } from "../../middlewares/paginationMiddleware";
 
 interface IWebsiteController {
   postWebsite(
@@ -18,7 +20,14 @@ interface IWebsiteController {
     req: ParsedRequest<deleteWebsiteRequest>,
     res: Response
   ): Promise<void>;
-  getWebsites(req: Request, res: Response): Promise<void>;
+  getWebsites(
+    req: ParsedRequest<websitePaginationRequest>,
+    res: Response
+  ): Promise<void>;
+  getWebsiteRaport(
+    req: ParsedRequest<getRaportRequest>,
+    res: Response
+  ): Promise<void>;
 }
 
 export class WebsiteController implements IWebsiteController {
@@ -39,13 +48,43 @@ export class WebsiteController implements IWebsiteController {
     res: Response
   ) => {
     const { id } = req.body;
+    console.log(req.params);
     await this.websiteService.deleteWebsite(id);
     res.status(ResponseStatus.NO_CONTENT).send(`${id} was deleted`);
   };
 
-  getWebsites = async (req: Request, res: Response) => {
+  getWebsites = async (
+    req: ParsedRequest<websitePaginationRequest>,
+    res: Response
+  ) => {
     const websites = await this.websiteService.getAllWebsites();
-    res.status(ResponseStatus.SUCCESS).send(websites);
-    console.log(websites);
+    paginate(websites)(req, res, () => {
+      const paginatedWebsites = req.body;
+      res.status(ResponseStatus.SUCCESS).send(paginatedWebsites);
+    });
   };
+
+  getWebsiteRaport = async (
+    req: ParsedRequest<getRaportRequest>,
+    res: Response
+  ) => {
+    const { start, finish } = req.query;
+    console.log(req.query);
+    const id = req.params.websiteId;
+    const startDate = new Date(start);
+    const finishDate = new Date(finish);
+    // if (typeof start === "string" && typeof finish === "string") {
+    await csvService.saveWebsitesLogsInGivenTimePeriodToCSV(
+      id,
+      startDate,
+      finishDate,
+      PATH_TO_RAPORT_CSV
+    );
+    res
+      .status(ResponseStatus.SUCCESS)
+      .download(PATH_TO_RAPORT_CSV, `Logs raport for ID: ${id}.csv`);
+  };
+  // };
 }
+
+// na logach i na websiteach dodac paginacje
