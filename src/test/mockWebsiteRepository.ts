@@ -1,20 +1,19 @@
 import { randomUUID } from "crypto";
 import { IWebsiteRepository } from "../domains/websites/WebsiteRepository";
 import { Website } from "../domains/websites/WebsiteTypes";
-import { WebsiteService } from "../domains/websites/WebsiteService";
 
 export class MockWebsiteRepository implements IWebsiteRepository {
-  private readonly fakeDB: Website[] = [];
+  fakeDB: Website[] = [];
 
   async createWebsite(url: string) {
-    const fakeUrl = {
+    const fakeWebsite = {
       id: randomUUID(),
       name: url,
       createdAt: new Date(),
       deletedAt: null,
       logs: [],
     };
-    this.fakeDB.push(fakeUrl);
+    this.fakeDB.push(fakeWebsite);
   }
 
   async getWebsiteByName(url: string) {
@@ -35,16 +34,14 @@ export class MockWebsiteRepository implements IWebsiteRepository {
     return filter;
   }
   async countWebsites(): Promise<number> {
-    return this.fakeDB.reduce(
-      (element, item) => (!item.deletedAt ? (element += 1) : (element += 0)),
-      0
-    );
+    return this.fakeDB.length;
   }
   async deleteWebsite(id: string): Promise<void> {
-    this.fakeDB.map((element) => {
+    this.fakeDB.find((element) => {
       if (!element.deletedAt && element.id === id) {
         element.deletedAt = new Date();
       }
+      return element;
     });
   }
 
@@ -61,16 +58,3 @@ export class MockWebsiteRepository implements IWebsiteRepository {
     });
   }
 }
-
-const mockrepo = new MockWebsiteRepository();
-
-export const webserv = new WebsiteService(mockrepo);
-
-// webserv.addWebsite("https://delete.pl").then(() => {
-//   webserv.getAllWebsites().then((data) => {
-//     const id = data[0].id;
-//     webserv.deleteWebsite(id).then(() => {
-//       webserv.getAllWebsites().then((data) => {});
-//     });
-//   });
-// });
