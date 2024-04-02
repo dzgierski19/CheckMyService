@@ -37,7 +37,7 @@ export function validateExpressRequest<T extends ExpressAnyRequestData>(
   const validationResult: SafeParseReturnType<
     {
       params?: Record<string, string>;
-      query?: QueryString.ParsedQs;
+      query?: ParsedQs;
       body?: unknown;
     },
     { params?: any; query?: any; body?: any }
