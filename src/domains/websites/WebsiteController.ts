@@ -8,7 +8,7 @@ import {
 import { IWebsiteService } from "./WebsiteService";
 import { ParsedRequest } from "../../interfaces/api/apiTypes";
 import { ResponseStatus } from "../errors/ErrorTypes";
-import { PATH_TO_RAPORT_CSV, csvService } from "../../IoC";
+import { csvService } from "../../IoC";
 import { paginate } from "../../middlewares/paginationMiddleware";
 import { Website } from "./WebsiteTypes";
 
@@ -29,6 +29,7 @@ interface IWebsiteController {
   getWebsiteReport(
     req: ParsedRequest<getReportRequest>,
     res: Response
+    // next: NextFunction
   ): Promise<void>;
 }
 
@@ -68,17 +69,23 @@ export class WebsiteController implements IWebsiteController {
 
   getWebsiteReport = async (
     req: ParsedRequest<getReportRequest>,
-    res: Response,
-    next: NextFunction
+    res: Response
+    // next: NextFunction
   ) => {
     const { start, finish } = req.query;
     console.log(req.query);
     const id = req.params.websiteId;
-    // const startDate = new Date(start);
-    // const finishDate = new Date(finish);
+    const startDate = new Date(start);
+    const finishDate = new Date(finish);
     // if (typeof start === "string" && typeof finish === "string") {
-    await csvService.streamLogs(id, start, finish, res, next);
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="logs for website ID ${id}.csv"`
+    );
+    await csvService.streamLogs(id, startDate, finishDate, res);
+
     res.status(ResponseStatus.SUCCESS);
+
     // .download(PATH_TO_RAPORT_CSV, `Logs raport for ID: ${id}.csv`);
   };
   // };
