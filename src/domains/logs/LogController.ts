@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { ILogService } from "./LogService";
 import {
   deleteLogRequest,
+  getLogRequest,
   logPaginationRequest,
   postLogRequest,
 } from "../../schemas/ValidateSchema";
@@ -16,7 +17,11 @@ interface ILogController {
     res: Response,
     next: NextFunction
   ): Promise<void>;
-  getLog(req: Request, res: Response, next: NextFunction): Promise<void>;
+  getLog(
+    req: ParsedRequest<getLogRequest>,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>;
   postLog(
     req: ParsedRequest<postLogRequest>,
     res: Response,
@@ -46,7 +51,7 @@ export class LogController implements ILogController {
     // res.status(ResponseStatus.SUCCESS).send(logs);
   };
 
-  getLog = async (req: Request, res: Response) => {
+  getLog = async (req: ParsedRequest<getLogRequest>, res: Response) => {
     const logId = req.params.logId;
     const websiteId = req.params.websiteId;
     await this.websiteService.getWebsite(websiteId);
