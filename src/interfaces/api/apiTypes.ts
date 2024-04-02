@@ -5,7 +5,7 @@ import { ParsedQs } from "qs";
 export type ExpressAnyRequestData = { params?: any; query?: any; body?: any };
 export type ExpressRequest<
   T extends {
-    query?: ParsedQs;
+    query?: Record<string, unknown>;
     body?: Record<string, unknown>;
     params?: Record<string, unknown>;
     locals: Record<string, unknown>;
@@ -14,7 +14,7 @@ export type ExpressRequest<
 
 export type ParsedRequest<
   T extends {
-    query?: ParsedQs;
+    query?: Record<string, unknown>;
     body?: Record<string, unknown>;
     params?: Record<string, unknown>;
   }
