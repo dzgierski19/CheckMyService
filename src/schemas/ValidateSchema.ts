@@ -20,8 +20,8 @@ export const deleteLogSchema = z.object({
 // vebsiteIdValidator
 const validateReportParams = z.object({ websiteId: z.string().uuid() });
 const validateReportQuery = z.object({
-  start: z.coerce.date(),
-  finish: z.coerce.date(),
+  start: z.string(),
+  finish: z.string(),
   // start: z.string(),
   // finish: z.string(),
 });
@@ -39,11 +39,15 @@ export const websitePaginationSchema = z.object({
 });
 
 export const logPaginationSchema = z.object({
-  params: z.object({ websiteId: z.string().uuid() }),
   query: z.object({
     page: z.coerce.number(),
     limit: z.coerce.number(),
   }),
+  params: z.object({ websiteId: z.string().uuid() }),
+});
+
+export const getLogSchema = z.object({
+  params: z.object({ websiteId: z.string().uuid(), logId: z.string().uuid() }),
 });
 
 export type postWebsiteRequest = z.infer<typeof postWebsiteSchema>;
@@ -53,3 +57,4 @@ export type deleteLogRequest = z.infer<typeof deleteLogSchema>;
 export type getReportRequest = z.infer<typeof getReportSchema>;
 export type websitePaginationRequest = z.infer<typeof websitePaginationSchema>;
 export type logPaginationRequest = z.infer<typeof logPaginationSchema>;
+export type getLogRequest = z.infer<typeof getLogSchema>;
