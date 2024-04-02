@@ -24,11 +24,11 @@ websiteRouter.delete(
 );
 websiteRouter.get(
   "/websites",
-  // validatorMiddleware(websitePaginationSchema),
+  validatorMiddleware(websitePaginationSchema),
   websiteController.getWebsites
 );
 websiteRouter.get(
   "/websites/:websiteId/logs/report",
-  // validatorMiddleware(getReportSchema),
+  validatorMiddleware(getReportSchema),
   websiteController.getWebsiteReport
 );

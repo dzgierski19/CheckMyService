@@ -17,7 +17,7 @@ logRouter.post(
 );
 logRouter.get(
   "/websites/:websiteId/logs/",
-  // validatorMiddleware(logPaginationSchema),
+  validatorMiddleware(logPaginationSchema),
   logController.getLogs
 );
 logRouter.get(
