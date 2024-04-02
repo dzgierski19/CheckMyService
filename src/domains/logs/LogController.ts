@@ -43,7 +43,7 @@ export class LogController implements ILogController {
       res.status(ResponseStatus.SUCCESS).send(paginatedWebsites);
     });
 
-    res.status(ResponseStatus.SUCCESS).send(logs);
+    // res.status(ResponseStatus.SUCCESS).send(logs);
   };
 
   getLog = async (req: Request, res: Response) => {
