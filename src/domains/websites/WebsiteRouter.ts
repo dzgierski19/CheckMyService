@@ -3,7 +3,7 @@ import { websiteController } from "../../IoC";
 import { validatorMiddleware } from "../../middlewares/validationMiddleware";
 import {
   deleteWebsiteSchema,
-  getRaportSchema,
+  getReportSchema,
   postWebsiteSchema,
   websitePaginationSchema,
 } from "../../schemas/ValidateSchema";
@@ -24,11 +24,11 @@ websiteRouter.delete(
 );
 websiteRouter.get(
   "/websites",
-  validatorMiddleware(websitePaginationSchema),
+  // validatorMiddleware(websitePaginationSchema),
   websiteController.getWebsites
 );
 websiteRouter.get(
   "/websites/:websiteId/logs/report",
-  validatorMiddleware(getRaportSchema),
+  // validatorMiddleware(getReportSchema),
   websiteController.getWebsiteReport
 );
