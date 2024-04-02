@@ -5,6 +5,7 @@ import {
   deleteWebsiteSchema,
   getRaportSchema,
   postWebsiteSchema,
+  websitePaginationSchema,
 } from "../../schemas/ValidateSchema";
 
 require("express-async-errors");
@@ -21,9 +22,13 @@ websiteRouter.delete(
   validatorMiddleware(deleteWebsiteSchema),
   websiteController.deleteWebsite
 );
-websiteRouter.get("/websites", websiteController.getWebsites);
+websiteRouter.get(
+  "/websites",
+  validatorMiddleware(websitePaginationSchema),
+  websiteController.getWebsites
+);
 websiteRouter.get(
   "/websites/:websiteId/logs/report",
   validatorMiddleware(getRaportSchema),
-  websiteController.getWebsiteRaport
+  websiteController.getWebsiteReport
 );
