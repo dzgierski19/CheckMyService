@@ -12,8 +12,7 @@ export interface ICSVService {
     websiteId: string,
     startDate: Date,
     endDate: Date,
-    res: Response,
-    next: NextFunction
+    res: Response
   ): Promise<void>;
 }
 
@@ -27,8 +26,7 @@ export class CSVService implements ICSVService {
     websiteId: string,
     startDate: Date,
     endDate: Date,
-    res: Response,
-    next: NextFunction
+    res: Response
   ) {
     const logs = await this.showLogsForWebsiteInGivenTimePeriod(
       websiteId,
@@ -36,20 +34,19 @@ export class CSVService implements ICSVService {
       endDate
     );
     try {
-      await this.streamData(res, logs, next);
+      await this.streamData(res, logs);
     } catch (error) {
       throw new PathError("Cannot write file");
     }
   }
 
-  private async streamData<T>(res: Response, data: T[], next: NextFunction) {
+  private async streamData<T>(res: Response, data: T[]) {
     const csvStream = format({ headers: true });
-    // res.setHeader("Content-Type", "text/csv");
-    // res.setHeader("Content-Disposition", 'attachment; filename="download.csv"');
+    res.setHeader("Content-Type", "text/csv");
     csvStream.pipe(res);
     data.forEach((row) => csvStream.write(row));
     csvStream.end();
-    next();
+    console.log(data);
   }
 
   private async showLogsForWebsiteInGivenTimePeriod(
@@ -59,12 +56,13 @@ export class CSVService implements ICSVService {
   ) {
     this.checkDate(startDate, endDate);
     const website = await this.websiteService.getWebsite(id);
-    const filteredWebsites = website.logs.filter((log) => {
+    const logs = website.logs.filter((log) => {
       if (startDate < log.created_at && log.created_at < endDate) {
         return log;
       }
     });
-    return filteredWebsites;
+    console.log(logs);
+    return logs;
   }
 
   private checkDate(startDate: Date, endDate: Date) {
