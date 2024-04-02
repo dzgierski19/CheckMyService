@@ -15,19 +15,21 @@ export function paginate<T>(model: T[]) {
     next: NextFunction
   ) => {
     const { page, limit } = req.query;
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
+    const limitToNumber = +limit;
+    const pageToNumber = +page;
+    const startIndex = (pageToNumber - 1) * limitToNumber;
+    const endIndex = pageToNumber * limitToNumber;
     const result = {} as result<T>;
     if (endIndex < model.length) {
       result.next = {
-        page: page + 1,
-        limit: limit,
+        page: pageToNumber + 1,
+        limit: limitToNumber,
       };
     }
     if (startIndex > 0) {
       result.previous = {
-        page: page - 1,
-        limit: limit,
+        page: pageToNumber - 1,
+        limit: limitToNumber,
       };
     }
 
