@@ -5,8 +5,8 @@ import { LogRepository } from "./domains/logs/LogRepository";
 import { LogService } from "./domains/logs/LogService";
 import { WebsiteController } from "./domains/websites/WebsiteController";
 import { LogController } from "./domains/logs/LogController";
-import { Cron } from "./Cron";
-import { CSVService } from "./CSVService";
+import { Cron } from "./utils/Cron";
+import { CSVService } from "./domains/csv/CSVService";
 import path from "path";
 
 export const CRON_EVERY_10_SECONDS = "*/10 * * * * *";
@@ -21,5 +21,5 @@ export const logService = new LogService(logRepository, websiteService);
 export const websiteController = new WebsiteController(websiteService);
 export const logController = new LogController(logService, websiteService);
 export const csvService = new CSVService(websiteService, logService);
-export const cron = new Cron(csvService);
-cron.checkWebsites(PATH_TO_CRON_CSV);
+export const cron = new Cron(logService, websiteService);
+cron.checkWebsites();
