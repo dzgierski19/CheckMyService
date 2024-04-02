@@ -22,8 +22,6 @@ const validateReportParams = z.object({ websiteId: z.string().uuid() });
 const validateReportQuery = z.object({
   start: z.string(),
   finish: z.string(),
-  // start: z.string(),
-  // finish: z.string(),
 });
 
 export const getReportSchema = z.object({
@@ -33,15 +31,15 @@ export const getReportSchema = z.object({
 
 export const websitePaginationSchema = z.object({
   query: z.object({
-    page: z.coerce.number(),
-    limit: z.coerce.number(),
+    page: z.string(),
+    limit: z.string(),
   }),
 });
 
 export const logPaginationSchema = z.object({
   query: z.object({
-    page: z.coerce.number(),
-    limit: z.coerce.number(),
+    page: z.string(),
+    limit: z.string(),
   }),
   params: z.object({ websiteId: z.string().uuid() }),
 });
