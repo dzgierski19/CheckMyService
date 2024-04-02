@@ -32,8 +32,11 @@
   "dependencies": {
     "@prisma/client": "^5.9.1",
     "@types/convert-array-to-csv": "^2.0.2",
+    "@types/qs": "^6.9.14",
     "@types/supertest": "^6.0.2",
     "convert-array-to-csv": "^2.0.0",
-    "express-async-errors": "^3.1.1"
+    "express-async-errors": "^3.1.1",
+    "fast-csv": "^5.0.1",
+    "qs": "^6.12.0"
   }
 }
