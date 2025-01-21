@@ -1,19 +1,32 @@
 # CheckMyService
 
-The application is designed to monitor the status of various websites. Website details are stored in a SQLite database. Every 10 seconds, the application sends HTTP requests to these websites and analyzes the responses to verify their functionality (status codes 2xx). After each check, the website statuses are logged into a CSV file.
+This application is designed to monitor the status of various websites. It stores website details in a SQLite database and checks their functionality every 10 seconds by sending HTTP requests. The results are saved into a CSV file for tracking and analysis.
 
-Features
-Add Websites: Easily add websites to monitor by entering their URLs into the SQLite database.
-Automated Status Monitoring: The application automatically sends HTTP requests to the stored website URLs every 10 seconds to check their status and ensure they're operational (returning status codes 2xx).
-CSV Status Logging: Each check logs website data into a CSV file, including the timestamp, website name, status (Running/Down), and HTTP response code.
-CSV Download: Users can download a CSV file with the status history of a selected website.
+## Features
 
-🚀 Technologies
-Node.js
-Express.js
-TypeScript
-Zod
-Prisma
-Cron
-PostgreSQL
+### 1. Add Websites
+Easily add websites to monitor by inserting their URLs into the SQLite database.
+
+### 2. Automated Status Monitoring
+Every 10 seconds, the application sends HTTP requests to the stored website URLs. It checks their responses to determine if the websites are operational (returning HTTP status codes 2xx).
+
+### 3. CSV Status Logging
+The application logs the status of each website into a CSV file after every check. The log includes:
+- Timestamp
+- Website name
+- Status (`Running` or `Down`)
+- HTTP response code
+
+### 4. CSV Download
+Users can download a CSV file containing the status history of a selected website for offline analysis.
+
+## 🚀 Technologies
+
+- **Node.js**  
+- **Express.js**  
+- **TypeScript**  
+- **Zod**  
+- **Prisma**  
+- **Cron**  
+- **PostgreSQL**
 
