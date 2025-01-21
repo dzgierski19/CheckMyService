@@ -1,13 +1,19 @@
-Create a monitoring application for the status of websites.
+# CheckMyService
 
-Websites to be monitored should be loaded from a text file.
+The application is designed to monitor the status of various websites. Website details are stored in a SQLite database. Every 10 seconds, the application sends HTTP requests to these websites and analyzes the responses to verify their functionality (status codes 2xx). After each check, the website statuses are logged into a CSV file.
 
-The application should send HTTP requests to each website address every 10 seconds.
+Features
+Add Websites: Easily add websites to monitor by entering their URLs into the SQLite database.
+Automated Status Monitoring: The application automatically sends HTTP requests to the stored website URLs every 10 seconds to check their status and ensure they're operational (returning status codes 2xx).
+CSV Status Logging: Each check logs website data into a CSV file, including the timestamp, website name, status (Running/Down), and HTTP response code.
+CSV Download: Users can download a CSV file with the status history of a selected website.
 
-We consider a website to be functioning if it returns a status in the 2xx range.
+🚀 Technologies
+Node.js
+Express.js
+TypeScript
+Zod
+Prisma
+Cron
+PostgreSQL
 
-After each request, the status of the websites should be saved to db.
-
-Information to be recorded for each website includes Timestamp, Website Name, its status - Running/Down, and the returned HTTP Code.
-
-The program must not block the Event Loop.
